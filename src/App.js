@@ -13,6 +13,12 @@ const C2S2Agent = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [usageMetrics, setUsageMetrics] = useState({
+    totalTokens: 0,
+    totalCost: 0,
+    totalRequests: 0,
+    avgResponseTime: 0
+  });
   const messagesEndRef = useRef(null);
 
   // Load messages from localStorage on mount
@@ -554,7 +560,7 @@ Amazon Verteilzentrum Krefeld GmbH, An der Römerschanze 19, D-47809 Krefeld
       // Use Cloudflare Pages Functions in production, proxy in development
       const apiUrl = process.env.NODE_ENV === 'production'
         ? '/api/chat'  // Cloudflare Pages Functions
-        : 'http://localhost:3001/api/anthropic/v1/messages';  // Development proxy
+        : '/api/chat';  // Use production Cloudflare function for testing
 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -580,6 +586,23 @@ Amazon Verteilzentrum Krefeld GmbH, An der Römerschanze 19, D-47809 Krefeld
         timestamp: new Date().toISOString(),
         id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       };
+
+      // Update usage metrics if available
+      if (data.usage) {
+        setUsageMetrics(prev => {
+          const newTotalRequests = prev.totalRequests + 1;
+          const newTotalTokens = prev.totalTokens + data.usage.totalTokens;
+          const newTotalCost = prev.totalCost + parseFloat(data.usage.estimatedCost);
+          const newAvgResponseTime = ((prev.avgResponseTime * prev.totalRequests) + data.usage.responseTimeMs) / newTotalRequests;
+
+          return {
+            totalTokens: newTotalTokens,
+            totalCost: newTotalCost,
+            totalRequests: newTotalRequests,
+            avgResponseTime: newAvgResponseTime
+          };
+        });
+      }
 
       setMessages([...newMessages, assistantMessage]);
     } catch (error) {
@@ -724,6 +747,44 @@ Amazon Verteilzentrum Krefeld GmbH, An der Römerschanze 19, D-47809 Krefeld
                 }`}>Amazon Customs Clearance & Shipping Services</p>
               </div>
             </div>
+            {/* Usage Metrics */}
+            <div className={`hidden md:flex items-center gap-4 px-4 py-2 rounded-lg transition-colors duration-300 ${
+              darkMode ? 'bg-gray-700' : 'bg-gray-50'
+            }`}>
+              <div className="flex items-center gap-1" title="Total API Requests">
+                <span className={`text-sm font-medium transition-colors duration-300 ${
+                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>Requests:</span>
+                <span className={`text-sm font-bold transition-colors duration-300 ${
+                  darkMode ? 'text-white' : 'text-gray-900'
+                }`}>{usageMetrics.totalRequests}</span>
+              </div>
+              <div className="flex items-center gap-1" title="Total Tokens Used">
+                <span className={`text-sm font-medium transition-colors duration-300 ${
+                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>Tokens:</span>
+                <span className={`text-sm font-bold transition-colors duration-300 ${
+                  darkMode ? 'text-white' : 'text-gray-900'
+                }`}>{usageMetrics.totalTokens.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center gap-1" title="Estimated Cost">
+                <span className={`text-sm font-medium transition-colors duration-300 ${
+                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>Cost:</span>
+                <span className={`text-sm font-bold transition-colors duration-300 ${
+                  darkMode ? 'text-green-400' : 'text-green-600'
+                }`}>${usageMetrics.totalCost.toFixed(4)}</span>
+              </div>
+              <div className="flex items-center gap-1" title="Average Response Time">
+                <span className={`text-sm font-medium transition-colors duration-300 ${
+                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>Avg Time:</span>
+                <span className={`text-sm font-bold transition-colors duration-300 ${
+                  darkMode ? 'text-white' : 'text-gray-900'
+                }`}>{usageMetrics.avgResponseTime.toFixed(0)}ms</span>
+              </div>
+            </div>
+
             <nav className="flex items-center gap-2" role="navigation" aria-label="Chat controls">
               <button
                 onClick={exportChat}
@@ -766,6 +827,46 @@ Amazon Verteilzentrum Krefeld GmbH, An der Römerschanze 19, D-47809 Krefeld
           </div>
         </div>
       </header>
+
+      {/* Mobile Usage Metrics */}
+      <div className={`md:hidden px-4 py-2 transition-colors duration-300 ${
+        darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+      } border-b`}>
+        <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center gap-3">
+            <span className={`transition-colors duration-300 ${
+              darkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Requests: <span className={`font-semibold transition-colors duration-300 ${
+                darkMode ? 'text-white' : 'text-gray-900'
+              }`}>{usageMetrics.totalRequests}</span>
+            </span>
+            <span className={`transition-colors duration-300 ${
+              darkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Tokens: <span className={`font-semibold transition-colors duration-300 ${
+                darkMode ? 'text-white' : 'text-gray-900'
+              }`}>{usageMetrics.totalTokens.toLocaleString()}</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className={`transition-colors duration-300 ${
+              darkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Cost: <span className={`font-semibold transition-colors duration-300 ${
+                darkMode ? 'text-green-400' : 'text-green-600'
+              }`}>${usageMetrics.totalCost.toFixed(4)}</span>
+            </span>
+            <span className={`transition-colors duration-300 ${
+              darkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Avg: <span className={`font-semibold transition-colors duration-300 ${
+                darkMode ? 'text-white' : 'text-gray-900'
+              }`}>{usageMetrics.avgResponseTime.toFixed(0)}ms</span>
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* Messages */}
       <main

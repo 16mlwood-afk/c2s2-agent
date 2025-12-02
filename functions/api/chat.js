@@ -66,20 +66,31 @@ export async function onRequestPost(context) {
     const outputCost = (outputTokens / 1000000) * 15;
     const totalCost = inputCost + outputCost;
 
-    // Log usage data
-    console.log(JSON.stringify({
-      timestamp: new Date().toISOString(),
-      user: userEmail,
-      model: model || 'claude-3-5-sonnet-20241022',
+    // Prepare usage data
+    const usageData = {
       inputTokens,
       outputTokens,
       totalTokens,
       estimatedCost: totalCost.toFixed(4),
       responseTimeMs: responseTime,
+      model: model || 'claude-3-5-sonnet-20241022',
       messageCount: messages.length
+    };
+
+    // Log usage data
+    console.log(JSON.stringify({
+      timestamp: new Date().toISOString(),
+      user: userEmail,
+      ...usageData
     }));
 
-    return new Response(JSON.stringify(data), {
+    // Return response with usage data
+    const responseData = {
+      ...data,
+      usage: usageData
+    };
+
+    return new Response(JSON.stringify(responseData), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
