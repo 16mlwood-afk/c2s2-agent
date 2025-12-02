@@ -565,7 +565,7 @@ Amazon Verteilzentrum Krefeld GmbH, An der Römerschanze 19, D-47809 Krefeld
           model: 'claude-sonnet-4-20250514',
           max_tokens: 2000,
           system: SYSTEM_PROMPT,
-          messages: newMessages
+          messages: newMessages.map(({ role, content }) => ({ role, content }))
         })
       });
 
@@ -653,7 +653,7 @@ Amazon Verteilzentrum Krefeld GmbH, An der Römerschanze 19, D-47809 Krefeld
           model: 'claude-sonnet-4-20250514',
           max_tokens: 2000,
           system: SYSTEM_PROMPT,
-          messages: newMessages
+          messages: newMessages.map(({ role, content }) => ({ role, content }))
         })
       });
 
