@@ -1,5 +1,7 @@
-# Cloudflare Pages configuration
+# Cloudflare Pages configuration - Automatic deployment
 pages_build_output_dir = "build"
+
+# No custom deploy command - let Pages handle deployment automatically
 
 # Environment variables (will be set in Cloudflare Dashboard)
 # ANTHROPIC_API_KEY will be added via dashboard
