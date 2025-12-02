@@ -2,9 +2,9 @@
 
 A specialized AI-powered web application that serves as an expert assistant for Amazon's Customs Clearance and Shipping Services (C2S2) between UK and EU marketplaces. It helps FBA sellers navigate complex shipping requirements, customs compliance, and logistics processes through an intelligent chat interface powered by Anthropic's Claude AI.
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://c2s2-agent-7qwm0avqa-mason-woods-projects-44f9efc8.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://c2s2-agent-[random].pages.dev)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/16mlwood-afk/c2s2-agent)
-[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black)](https://vercel.com)
+[![Cloudflare](https://img.shields.io/badge/Deployed_on-Cloudflare-orange)](https://pages.cloudflare.com/)
 [![React](https://img.shields.io/badge/React-19.2.0-blue)](https://reactjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.18-38B2AC)](https://tailwindcss.com/)
 
@@ -87,16 +87,17 @@ Visit [http://localhost:3000](http://localhost:3000) to see the app running loca
 - **HTTP Client:** Native fetch API with CORS handling
 
 ### Backend Stack
-- **Runtime:** Vercel Serverless Functions (Node.js)
+- **Runtime:** Cloudflare Pages Functions (Node.js)
 - **AI Integration:** Anthropic Claude API (claude-sonnet-4-20250514)
 - **CORS Handling:** Server-side proxy with comprehensive headers
 - **Security:** Environment variables for API keys
 
 ### Infrastructure
-- **Deployment:** Vercel with global CDN
+- **Deployment:** Cloudflare Pages with global CDN
+- **Authentication:** Cloudflare Zero Trust (Cloudflare Access)
 - **Version Control:** Git with GitHub
-- **CI/CD:** Automated Vercel deployments
-- **Monitoring:** Vercel Analytics (available)
+- **CI/CD:** Automated Cloudflare Pages deployments
+- **Security:** Email/domain-based access control
 
 ## 🛠️ Development Setup
 
@@ -128,7 +129,7 @@ ANTHROPIC_API_KEY=sk-ant-api03-...
 The app automatically detects the environment:
 
 - **Development:** `http://localhost:3001/api/anthropic/v1/messages` (proxy server)
-- **Production:** `/api/chat` (Vercel serverless function)
+- **Production:** `/api/chat` (Cloudflare Pages Functions)
 
 ## 📦 Available Scripts
 
@@ -152,38 +153,38 @@ npm run eject          # Eject from Create React App (irreversible)
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
-
-```bash
-# Login to Vercel
-vercel login
-
-# Link project (first time only)
-vercel link
-
-# Add environment variable
-vercel env add ANTHROPIC_API_KEY
-
-# Deploy to production
-npm run deploy
-```
-
-### Manual Deployment
+### Cloudflare Pages (Recommended)
 
 ```bash
 # Build for production
 npm run build
 
-# Deploy build folder to any static hosting service
-# (Netlify, GitHub Pages, AWS S3, etc.)
+# Deploy to Cloudflare Pages (via dashboard or wrangler)
+# 1. Upload build/ folder to Cloudflare Pages dashboard
+# 2. Add ANTHROPIC_API_KEY environment variable
+# 3. Enable Cloudflare Access for authentication
+```
+
+### Development Commands
+
+```bash
+# Start development server with proxy
+npm run dev
+
+# Build for production
+npm run build
+
+# Start proxy server only
+npm run proxy
 ```
 
 ## 📁 Project Structure
 
 ```
 c2s2-agent/
-├── api/
-│   └── chat.js              # Vercel serverless function
+├── functions/
+│   └── api/
+│       └── chat.js          # Cloudflare Pages Functions
 ├── public/
 │   ├── index.html          # Main HTML template
 │   ├── favicon.ico         # App favicon
@@ -216,19 +217,17 @@ module.exports = {
 }
 ```
 
-### Vercel Configuration (`vercel.json`)
-```json
-{
-  "buildCommand": "npm run build",
-  "outputDirectory": "build",
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    }
-  ]
-}
-```
+### Cloudflare Pages Configuration
+
+Cloudflare Pages automatically detects the `functions/` directory and deploys Pages Functions. No additional configuration file needed.
+
+**Environment Variables (set in Cloudflare Dashboard):**
+- `ANTHROPIC_API_KEY`: Your Anthropic API key
+
+**Build Settings:**
+- Build command: `npm run build`
+- Build output directory: `build`
+- Functions directory: `functions`
 
 ### PostCSS Configuration (`postcss.config.js`)
 ```javascript
@@ -263,12 +262,18 @@ The C2S2 Agent includes a comprehensive knowledge base covering:
 
 ### API Key Management
 - ✅ API keys stored in environment variables (never in code)
-- ✅ Vercel environment variables are encrypted
+- ✅ Cloudflare Pages environment variables are encrypted
 - ✅ Client-side storage uses localStorage (user's responsibility)
 - ✅ No sensitive data exposed in repository
 
+### Authentication & Access Control
+- ✅ Cloudflare Zero Trust (Cloudflare Access) for authentication
+- ✅ Email/domain-based access policies
+- ✅ SSO integration support available
+- ✅ IP restrictions and geo-blocking capabilities
+
 ### CORS Configuration
-- ✅ Serverless function handles all CORS headers
+- ✅ Pages Functions handle all CORS headers
 - ✅ Development proxy server configured for local testing
 - ✅ Preflight requests properly handled
 
@@ -348,7 +353,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Anthropic** for the Claude AI API
 - **Amazon** for C2S2 shipping services documentation
-- **Vercel** for hosting and serverless functions
+- **Cloudflare** for hosting, Pages Functions, and Zero Trust security
 - **Tailwind CSS** for the utility-first CSS framework
 
 ## 📞 Support
@@ -362,4 +367,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Built with ❤️ using React, Tailwind CSS, and Claude AI**
 
 ⭐ **Star this repo** if you find it helpful!
-# Force rebuild for Cloudflare Pages
+# Trigger rebuild for Cloudflare Pages deployment
