@@ -551,9 +551,9 @@ Amazon Verteilzentrum Krefeld GmbH, An der Römerschanze 19, D-47809 Krefeld
     setIsLoading(true);
 
     try {
-      // Use Vercel serverless function in production, proxy in development
+      // Use Cloudflare Pages Functions in production, proxy in development
       const apiUrl = process.env.NODE_ENV === 'production'
-        ? '/api/chat'  // Vercel serverless function
+        ? '/api/chat'  // Cloudflare Pages Functions
         : 'http://localhost:3001/api/anthropic/v1/messages';  // Development proxy
 
       const response = await fetch(apiUrl, {
