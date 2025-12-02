@@ -13,8 +13,6 @@ export async function onRequestPost(context) {
     const { messages, system, max_tokens, model } = body;
     const apiKey = env.ANTHROPIC_API_KEY;
     
-    console.log('API Key present:', !!apiKey);
-    
     if (!apiKey) {
       return new Response(JSON.stringify({ error: 'API key not configured' }), {
         status: 500,
@@ -29,14 +27,12 @@ export async function onRequestPost(context) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: model || 'claude-sonnet-4-20250514',
+        model: model || 'claude-3-5-sonnet-20241022',
         max_tokens: max_tokens || 2000,
         system,
         messages
       })
     });
-    
-    console.log('Anthropic API status:', response.status);
     
     if (!response.ok) {
       const error = await response.text();
@@ -52,7 +48,6 @@ export async function onRequestPost(context) {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.log('Caught error:', error.message);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
