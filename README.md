@@ -362,3 +362,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Built with ❤️ using React, Tailwind CSS, and Claude AI**
 
 ⭐ **Star this repo** if you find it helpful!
+# Force rebuild for Cloudflare Pages
